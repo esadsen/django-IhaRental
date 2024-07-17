@@ -2,10 +2,17 @@ from django.db import models
 from django.conf import settings
 
 class Drone(models.Model):
+    CATEGORY_CHOICES = [
+        ('armed', 'Armed'),
+        ('unarmed', 'Unarmed'),
+    ]
+    
     brand = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
     weight = models.FloatField()
-    category = models.CharField(max_length=100)
+    category = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+    image=models.ImageField(upload_to='drone_images',blank=True,null=True)
+
 
     def __str__(self):
         return f"{self.brand} {self.model}"
