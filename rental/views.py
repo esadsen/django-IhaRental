@@ -33,7 +33,7 @@ def new(request):
         'title':'New Drone'
     })
 
-@login_required(login_url='../../../user/login')
+@login_required
 def edit(request, pk):
     drone = get_object_or_404(Drone, pk=pk)
     
@@ -57,6 +57,22 @@ def edit(request, pk):
         'form': form,
         'title': 'Edit Drone'
     })
+
+@login_required
+def delete(request, pk):
+    try:
+        if request.user.is_staff:
+            drone = Drone.objects.get(pk=pk)
+        else:
+            messages.error(request, 'You do not have permission to delete this drone.')
+            return redirect('index')
+        
+    except Drone.DoesNotExist:
+        messages.error(request, 'The drone does not exist or you do not have permission to delete it.')
+        return redirect('index')  
+    
+    drone.delete()
+    return redirect('index')
 
 def resize_image(image_path, size=(2000, 2000)):
     img = Image.open(image_path)
