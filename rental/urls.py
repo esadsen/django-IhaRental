@@ -5,6 +5,8 @@ app_name="rental"
 
 urlpatterns=[
     path('new/',views.new,name='new'),
+    path('<int:pk>/edit/',views.edit, name="edit"),
+
     
     
 ]
