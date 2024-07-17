@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Drone List{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-4">Drone List</h2>
+    <table id="droneTable" class="display w-full">
+        <thead>
+            <tr>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Category</th>
+                <th>Weight</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var isAdmin = {{ user.is_staff|yesno:"true,false" }};
+
+        $('#droneTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "{% url 'rental:drone_data' %}",
+            "columns": [
+                { "data": "brand" },
+                { "data": "model" },
+                { "data": "category" },
+                { "data": "weight" },
+                { 
+                    "data": "id",
+                    "render": function(data, type, row, meta){
+                        var buttons = '<a href="/rental/drone/' + data + '/rent/" class="inline-block bg-blue-500 text-white px-3 py-2 rounded-md mx-1"><i class="fas fa-cart-plus"></i> Rent</a>';
+                        if (isAdmin) {
+                            buttons += '<a href="/rental/drone/' + data + '/edit/" class="inline-block bg-yellow-500 text-white px-3 py-2 rounded-md mx-1"><i class="fas fa-edit"></i> Edit</a>';
+                            buttons += '<a href="/rental/drone/' + data + '/delete/" class="inline-block bg-red-500 text-white px-3 py-2 rounded-md mx-1"><i class="fas fa-trash-alt"></i> Delete</a>';
+                        }
+                        return buttons;
+                    }
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

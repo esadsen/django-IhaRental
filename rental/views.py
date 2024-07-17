@@ -4,6 +4,8 @@ from .models import Drone,Rental
 from django.contrib import messages
 from .forms import NewDroneForm,EditDroneForm
 from PIL import Image
+from django.http import JsonResponse
+
 
 
 def index(request):
@@ -73,6 +75,41 @@ def delete(request, pk):
     
     drone.delete()
     return redirect('index')
+
+def drone_list(request):
+    return render(request, 'drone/drone_list.html')
+
+def drone_data(request):
+    draw = int(request.GET.get('draw', 0))
+    start = int(request.GET.get('start', 0))
+    length = int(request.GET.get('length', 10))
+    search_value = request.GET.get('search[value]', '')
+
+    drones = Drone.objects.all()
+    total_records = drones.count()
+
+    if search_value:
+        drones = drones.filter(brand__icontains=search_value) | drones.filter(model__icontains=search_value) | drones.filter(category__icontains=search_value)
+
+    filtered_records = drones.count()
+    drones = drones[start:start+length]
+
+    data = [{
+        'brand': drone.brand,
+        'model': drone.model,
+        'category': drone.category,
+        'weight': drone.weight,
+        'id': drone.id
+    } for drone in drones]
+
+    response = {
+        'draw': draw,
+        'recordsTotal': total_records,
+        'recordsFiltered': filtered_records,
+        'data': data
+    }
+
+    return JsonResponse(response)
 
 def resize_image(image_path, size=(2000, 2000)):
     img = Image.open(image_path)

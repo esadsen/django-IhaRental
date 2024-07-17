@@ -1,5 +1,5 @@
 from django import forms
-from .models import Drone
+from .models import Drone,Rental
 
 INPUT_CLASSES='w-full py-4 px-6 rounded-xl border'
 
@@ -45,4 +45,13 @@ class EditDroneForm(forms.ModelForm):
             'image': forms.FileInput(attrs={
                 'class': INPUT_CLASSES
             }),
+        }
+        
+class RentalForm(forms.ModelForm):
+    class Meta:
+        model = Rental
+        fields = ['start_datetime', 'end_datetime']
+        widgets = {
+            'start_datetime': forms.DateTimeInput(attrs={'class': 'w-full py-2 px-4 rounded-md border'}),
+            'end_datetime': forms.DateTimeInput(attrs={'class': 'w-full py-2 px-4 rounded-md border'}),
         }
