@@ -19,12 +19,12 @@
                 {% if request.user.is_staff %}
                 <a href="{% url 'rental:new' %}" class="text-lg font-semibold hover:text-gray-500">New Drone</a>
                 {% endif %}
-                <a href="{% url 'rental:drone_list' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Drones</a>
-                <a href="#" class="text-lg font-semibold hover:text-gray-500">Rent History</a>
-                <a href="{% url 'user:logout' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Log Out</a>
+                <a href="{% url 'rental:drone_list' %}" class="text-lg font-semibold hover:text-gray-500">Drones</a>
+                <a href="{% url 'rental:user_rentals' %}" class="text-lg font-semibold hover:text-gray-500">Rent History</a>
+                <a href="{% url 'user:logout' %}" class="text-lg font-semibold hover:text-gray-500">Log Out</a>
             {% else %}            
-                <a href="{% url 'user:signup' %}" class="px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700">Sign Up</a>
-                <a href="{% url 'user:login' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Log In</a>
+                <a href="{% url 'user:signup' %}" class="text-lg font-semibold hover:text-gray-500">Sign Up</a>
+                <a href="{% url 'user:login' %}" class="text-lg font-semibold hover:text-gray-500">Log In</a>
             {% endif %}  
         </div>
     </nav>

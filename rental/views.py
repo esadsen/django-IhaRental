@@ -22,9 +22,7 @@ def new(request):
         if form.is_valid():
             item=form.save(commit=False)
             item.save()
-            
-            resize_image(item.image.path)
-            
+                        
             return redirect('index')
     
     else:
@@ -48,9 +46,7 @@ def edit(request, pk):
         form = EditDroneForm(request.POST, request.FILES, instance=drone)
         
         if form.is_valid():
-            form.save()
-            resize_image(drone.image.path)  # resize_image fonksiyonunu tanımladığınızdan emin olun
-            
+            form.save()            
             return redirect('index')
     else:
         form = EditDroneForm(instance=drone)
@@ -133,7 +129,66 @@ def drone_rent(request, pk):
         'title': 'Rent Drone'
     })
 
-def resize_image(image_path, size=(2000, 2000)):
-    img = Image.open(image_path)
-    img = img.resize(size, Image.Resampling.LANCZOS)
-    img.save(image_path)
+@login_required
+def user_rentals(request):
+    return render(request, 'rental/user_rentals.html')
+
+@login_required
+def user_rentals_data(request):
+    draw = int(request.GET.get('draw', 0))
+    start = int(request.GET.get('start', 0))
+    length = int(request.GET.get('length', 10))
+    search_value = request.GET.get('search[value]', '')
+
+    rentals = Rental.objects.filter(user=request.user)
+    total_records = rentals.count()
+
+    if search_value:
+        rentals = rentals.filter(
+            drone__brand__icontains=search_value
+        ) | rentals.filter(
+            drone__model__icontains=search_value
+        ) | rentals.filter(
+            drone__category__icontains=search_value
+        )
+
+    filtered_records = rentals.count()
+    rentals = rentals[start:start+length]
+
+    data = [{
+        'id': rental.id,
+        'drone': f"{rental.drone.brand} {rental.drone.model}",
+        'start_datetime': rental.start_datetime.strftime('%Y-%m-%d %H:%M'),
+        'end_datetime': rental.end_datetime.strftime('%Y-%m-%d %H:%M'),
+    } for rental in rentals]
+
+    response = {
+        'draw': draw,
+        'recordsTotal': total_records,
+        'recordsFiltered': filtered_records,
+        'data': data
+    }
+
+    return JsonResponse(response)
+
+@login_required
+def rental_update(request, pk):
+    rental = get_object_or_404(Rental, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = RentalForm(request.POST, instance=rental)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Rental successfully updated!')
+            return redirect('rental:user_rentals')
+    else:
+        form = RentalForm(instance=rental)
+    return render(request, 'rental/rental_form.html', {'form': form, 'title': 'Edit Rental'})
+
+@login_required
+def rental_delete(request, pk):
+    rental = get_object_or_404(Rental, pk=pk, user=request.user)
+    if request.method == 'POST':
+        rental.delete()
+        messages.success(request, 'Rental successfully deleted!')
+        return redirect('rental:user_rentals')
+    return render(request, 'rental/rental_confirm_delete.html', {'rental': rental})

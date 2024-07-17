@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}My Rentals{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-4">My Rentals</h2>
+    <table id="rentalTable" class="display w-full">
+        <thead>
+            <tr>
+                <th>Drone</th>
+                <th>Start DateTime</th>
+                <th>End DateTime</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#rentalTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "{% url 'rental:user_rentals_data' %}",
+            "columns": [
+                { "data": "drone" },
+                { "data": "start_datetime" },
+                { "data": "end_datetime" },
+                { 
+                    "data": "id",
+                    "render": function(data, type, row, meta){
+                        return `
+                            <a href="/rental/${data}/edit/" class="inline-block bg-yellow-500 text-white px-3 py-2 rounded-md mx-1">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="/rental/${data}/delete/" class="inline-block bg-red-500 text-white px-3 py-2 rounded-md mx-1">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </a>
+                        `;
+                    }
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

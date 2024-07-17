@@ -11,7 +11,6 @@ class Drone(models.Model):
     model = models.CharField(max_length=100)
     weight = models.FloatField()
     category = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
-    image=models.ImageField(upload_to='drone_images',blank=True,null=True)
 
 
     def __str__(self):

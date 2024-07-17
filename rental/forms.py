@@ -6,7 +6,7 @@ INPUT_CLASSES='w-full py-4 px-6 rounded-xl border'
 class NewDroneForm(forms.ModelForm):
     class Meta:
         model=Drone
-        fields=('brand','model','category','weight','image')
+        fields=('brand','model','category','weight')
         widgets={          
             'brand': forms.TextInput(attrs={
                 'class': INPUT_CLASSES
@@ -20,15 +20,13 @@ class NewDroneForm(forms.ModelForm):
             'weight': forms.TextInput(attrs={
                 'class': INPUT_CLASSES
             }),
-            'image': forms.FileInput(attrs={
-                'class': INPUT_CLASSES
-            }),
+            
         }
         
 class EditDroneForm(forms.ModelForm):
     class Meta:
         model=Drone
-        fields=('brand','model','category','weight','image')
+        fields=('brand','model','category','weight')
         widgets={
             'brand': forms.TextInput(attrs={
                 'class': INPUT_CLASSES
@@ -42,9 +40,7 @@ class EditDroneForm(forms.ModelForm):
             'weight': forms.TextInput(attrs={
                 'class': INPUT_CLASSES
             }),
-            'image': forms.FileInput(attrs={
-                'class': INPUT_CLASSES
-            }),
+            
         }
         
 class RentalForm(forms.ModelForm):
