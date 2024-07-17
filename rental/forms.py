@@ -52,6 +52,12 @@ class RentalForm(forms.ModelForm):
         model = Rental
         fields = ['start_datetime', 'end_datetime']
         widgets = {
-            'start_datetime': forms.DateTimeInput(attrs={'class': 'w-full py-2 px-4 rounded-md border'}),
-            'end_datetime': forms.DateTimeInput(attrs={'class': 'w-full py-2 px-4 rounded-md border'}),
+            'start_datetime': forms.DateTimeInput(attrs={
+                'class': 'py-2 px-4 rounded-md border w-48', 
+                'readonly': 'readonly'
+            }),
+            'end_datetime': forms.DateTimeInput(attrs={
+                'class': 'py-2 px-4 rounded-md border w-48',  
+                'readonly': 'readonly'
+            }),
         }

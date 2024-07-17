@@ -1,8 +1,8 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib.auth.decorators import login_required
-from .models import Drone,Rental
+from .models import Drone, Rental
 from django.contrib import messages
-from .forms import NewDroneForm,EditDroneForm
+from .forms import NewDroneForm, EditDroneForm, RentalForm
 from PIL import Image
 from django.http import JsonResponse
 
@@ -110,6 +110,28 @@ def drone_data(request):
     }
 
     return JsonResponse(response)
+
+@login_required
+def drone_rent(request, pk):
+    drone = get_object_or_404(Drone, pk=pk)
+
+    if request.method == 'POST':
+        form = RentalForm(request.POST)
+        if form.is_valid():
+            rental = form.save(commit=False)
+            rental.drone = drone
+            rental.user = request.user
+            rental.save()
+            messages.success(request, 'Drone successfully rented!')
+            return redirect('rental:drone_list')
+    else:
+        form = RentalForm()
+
+    return render(request, 'rental/rental_form.html', {
+        'form': form,
+        'drone': drone,
+        'title': 'Rent Drone'
+    })
 
 def resize_image(image_path, size=(2000, 2000)):
     img = Image.open(image_path)

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Rent Drone{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl mb-4">
+        Rent <strong>{{ drone.brand }} {{ drone.model }}</strong>
+    </h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="py-2 px-4 mt-4 text-lg font-semibold bg-blue-500 text-white rounded-xl">Rent Drone</button>
+    </form>
+</div>
+
+<!-- jQuery ve DateTimePicker eklentilerini dahil et -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $('#id_start_datetime').datetimepicker({
+            format: 'Y-m-d H:i',
+            step: 30
+        });
+        $('#id_end_datetime').datetimepicker({
+            format: 'Y-m-d H:i',
+            step: 30
+        });
+    });
+</script>
+{% endblock %}
