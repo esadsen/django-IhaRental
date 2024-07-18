@@ -26,7 +26,10 @@ SECRET_KEY = 'django-insecure-bi-c-v3#a(ai@ys65nt61d=la(cy+abpc$fu5oe4c9@=66)zhp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1",
+                 "localhost",
+                 "db"
+                 ]
 
 LOGIN_URL='/login/'
 LOGIN_REDIRECT_URL='/'
@@ -85,7 +88,7 @@ DATABASES = {
         'NAME': 'iha_rental_db',  
         'USER': 'postgres',         
         'PASSWORD': 'blankbee7', 
-        'HOST': 'localhost',        
+        'HOST': 'db',        
         'PORT': '5432',             
     }
 }

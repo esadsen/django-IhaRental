@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Drone, Rental
 from django.contrib import messages
 from .forms import NewDroneForm, EditDroneForm, RentalForm
-from PIL import Image
 from django.http import JsonResponse
 
 

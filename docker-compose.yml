@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: iha_rental_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: blankbee7
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:blankbee7@db:5432/iha_rental_db
+
+volumes:
+  postgres_data:
