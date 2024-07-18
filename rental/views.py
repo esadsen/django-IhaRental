@@ -8,11 +8,43 @@ from django.http import JsonResponse
 
 
 
-def index(request):
-    return render(request, 'index.html')
+from django.shortcuts import render
 
-def contact(request):
-    return render(request, 'contact.html')
+def index(request):
+    drones = [
+        {
+            'name': 'Mini IHA',
+            'category': 'Unarmed',
+            'image_url': '../media/drone_images/mini_iha1.png'
+        },
+        {
+            'name': 'BAYRAKTAR TB2',
+            'category': 'Armed',
+            'image_url': '../media/drone_images/tb2_1.png'
+        },
+        {
+            'name': 'BAYRAKTAR TB3',
+            'category': 'Armed',
+            'image_url': '../media/drone_images/tb3.png'
+        },
+        
+    ]
+    
+    categories = [
+        {
+            'name': 'Unarmed',
+            'count': 1
+        },
+        {
+            'name': 'Armed',
+            'count': 2
+        }
+    ]
+    
+    return render(request, "index.html", {
+        'drones': drones,
+        'categories': categories
+    })
 
 @login_required
 def new(request):
@@ -69,8 +101,11 @@ def delete(request, pk):
         messages.error(request, 'The drone does not exist or you do not have permission to delete it.')
         return redirect('index')  
     
-    drone.delete()
-    return redirect('index')
+    if request.method == 'POST':
+        drone.delete()
+        messages.success(request, 'Drone successfully deleted!')
+        return redirect('rental:drone_list')
+    return render(request, 'drone/drone_confirm_delete.html', {'drone': drone})
 
 def drone_list(request):
     return render(request, 'drone/drone_list.html')
@@ -173,22 +208,89 @@ def user_rentals_data(request):
 
 @login_required
 def rental_update(request, pk):
-    rental = get_object_or_404(Rental, pk=pk, user=request.user)
+    if request.user.is_staff:
+        rental = get_object_or_404(Rental, pk=pk)
+    else:
+        rental = get_object_or_404(Rental, pk=pk, user=request.user)
     if request.method == 'POST':
         form = RentalForm(request.POST, instance=rental)
         if form.is_valid():
             form.save()
             messages.success(request, 'Rental successfully updated!')
-            return redirect('rental:user_rentals')
+            if request.user.is_staff:
+                return redirect('rental:all_rentals')
+            else:
+                return redirect('rental:user_rentals')
     else:
         form = RentalForm(instance=rental)
     return render(request, 'rental/rental_form.html', {'form': form, 'title': 'Edit Rental'})
 
 @login_required
 def rental_delete(request, pk):
-    rental = get_object_or_404(Rental, pk=pk, user=request.user)
+    if request.user.is_staff:
+        rental = get_object_or_404(Rental, pk=pk)
+    else:
+        rental = get_object_or_404(Rental, pk=pk, user=request.user)
+       
     if request.method == 'POST':
         rental.delete()
         messages.success(request, 'Rental successfully deleted!')
-        return redirect('rental:user_rentals')
+        if request.user.is_staff:
+            return redirect('rental:all_rentals')
+        else:
+            return redirect('rental:user_rentals')
     return render(request, 'rental/rental_confirm_delete.html', {'rental': rental})
+
+
+@login_required
+def all_rentals(request):
+    if request.user.is_staff:
+        return render(request, 'rental/all_rentals.html')
+    else:
+            messages.error(request, 'You do not have permission to access this page.')
+            return redirect('index')
+
+@login_required
+def all_rentals_data(request):
+    if request.user.is_staff:
+        draw = int(request.GET.get('draw', 0))
+        start = int(request.GET.get('start', 0))
+        length = int(request.GET.get('length', 10))
+        search_value = request.GET.get('search[value]', '')
+
+        rentals = Rental.objects.all()
+        total_records = rentals.count()
+
+        if search_value:
+            rentals = rentals.filter(
+                drone__brand__icontains=search_value
+            ) | rentals.filter(
+                drone__model__icontains=search_value
+            ) | rentals.filter(
+                drone__category__icontains=search_value
+            ) | rentals.filter(
+                user__username__icontains=search_value
+            )
+
+        filtered_records = rentals.count()
+        rentals = rentals[start:start+length]
+
+        data = [{
+            'id': rental.id,
+            'drone': f"{rental.drone.brand} {rental.drone.model}",
+            'user': rental.user.username,
+            'start_datetime': rental.start_datetime.strftime('%Y-%m-%d %H:%M'),
+            'end_datetime': rental.end_datetime.strftime('%Y-%m-%d %H:%M'),
+        } for rental in rentals]
+
+        response = {
+            'draw': draw,
+            'recordsTotal': total_records,
+            'recordsFiltered': filtered_records,
+            'data': data
+        }
+
+        return JsonResponse(response)
+    else:
+            messages.error(request, 'You do not have permission to access this page.')
+            return redirect('index')

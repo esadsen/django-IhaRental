@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import drone_list, drone_data, drone_rent, user_rentals, user_rentals_data, rental_delete, rental_update
+from .views import drone_list, drone_data, drone_rent, user_rentals, user_rentals_data, rental_delete, rental_update,all_rentals,all_rentals_data
 
 
 app_name="rental"
@@ -16,6 +16,8 @@ urlpatterns=[
     path('rentals/data/', user_rentals_data, name='user_rentals_data'),
     path('<int:pk>/edit/', rental_update, name='rental_update'),
     path('<int:pk>/delete/', rental_delete, name='rental_delete'),
+    path('admin/rentals/', all_rentals, name='all_rentals'),
+    path('admin/rentals/data/', all_rentals_data, name='all_rentals_data'),
 
 
 

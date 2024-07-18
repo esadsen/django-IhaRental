@@ -4,11 +4,15 @@
 
 {% block body %}
 <div class="container mx-auto px-4 py-8">
-    <h2 class="text-2xl font-bold mb-4">Are you sure you want to delete this rental?</h2>
+    <h2 class="text-2xl font-bold mb-4">Are you sure you want to cancel this rental?</h2>
     <form method="POST">
         {% csrf_token %}
         <button type="submit" class="py-2 px-4 mt-4 text-lg font-semibold bg-red-500 text-white rounded-xl">Delete</button>
+        {% if request.user.is_staff %}
+        <a href="{% url 'rental:all_rentals' %}" class="py-2 px-4 mt-4 text-lg font-semibold bg-gray-500 text-white rounded-xl">Cancel</a>
+        {% else %}
         <a href="{% url 'rental:user_rentals' %}" class="py-2 px-4 mt-4 text-lg font-semibold bg-gray-500 text-white rounded-xl">Cancel</a>
+        {% endif %}
     </form>
 </div>
 {% endblock %}
