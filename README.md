@@ -38,10 +38,11 @@ docker-compose exec web python manage.py makemigrations
 docker-compose exec web python manage.py migrate
 ```
 
-Django geliştirme sunucusunu başlatın:
+Django geliştirme sunucusunu yeniden başlatın:
 
 ```bash
-docker-compose up
+docker compose down
+docker compose up
 ```
 
 Uygulama linki:
